@@ -55,20 +55,7 @@ public void writeMessage(String user, String message){
 
 
 void serverEvent(Server chatServer, Client newClient) {
-  String newUserInfo[] = new String[1];
-  // wait for input
-  while(newClient.available() == 0){
-  }
-  //
-  
-  // ■  / halv kasse betyder split her
-  // ▀ / fuld kasse betyder stop transmission 
-  newUserInfo = newClient.readStringUntil('\n').replaceAll("\n", "").split("\\|"); // Fordi SPLIT er regex skal vi escape
-  //Parse public key
-  BigInteger userPublicKey = new BigInteger(newUserInfo[1]);
-  
-  // Create new ChatUser object and add it to the list
-  ChatUser cu = new ChatUser(newUserInfo[0], userPublicKey, newClient);
+  ChatUser cu = new ChatUser(newClient);
   chatUsers.add(cu);
   writeMessage("Server", cu.username + " har forbundet sig til serveren");
 }
@@ -76,18 +63,44 @@ void serverEvent(Server chatServer, Client newClient) {
 
 // Når en disconnecter fra serveren
 void disconnectEvent(Client disconnectedClient) {
-  // Søg efter brugeren der disconnectede
-  for(ChatUser cu: chatUsers){
-   if(cu.networkHandle == disconnectedClient ){
-     // Broadcast at han er logget ud
-     println(cu.username + " disconnected from server");
-     // Fjern fra listen.
-     chatUsers.remove(cu);
-   }
+  ChatUser disconnectedUser = findUser(disconnectedClient);
+  // Brugeren har endnu ikke sendt authentication packet
+  if(disconnectedUser == null){
+    return; 
   }
+  writeMessage("Server", disconnectedUser.username + " har forladt chatten");
+  chatUsers.remove(disconnectedUser);
+  
+}
+
+void clientEvent(Client clientSender) {
+  ChatUser sender = findUser(clientSender);
+  
+  // Brugeren har endnu ikke sendt authentication packet
+  if(sender == null){
+    return; 
+  }
+  writeMessage(sender.username, sender.readMessage());
+}
+
+void broadcastMessage(String user, String message){
+   for(ChatUser cu: chatUsers){
+     if(cu.username != user){
+       // så vi ikke broadcaster til afsenderen
+       cu.sendMessage(user, message);
+     }
+   }
 }
 
 
+ChatUser findUser(Client networkClient){
+    for(ChatUser cu: chatUsers){
+     if(cu.networkHandle == networkClient ){
+       return cu;
+    }
+  }
+  return null;
+}
 
 void draw(){
   background(0);
