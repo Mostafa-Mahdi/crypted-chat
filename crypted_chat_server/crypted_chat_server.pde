@@ -16,14 +16,27 @@ int textSize = 20;
 int lineHeight = 25;
 String font = "arial";
 int port = 1234;
-
+RSA rsa;
 
 void setup(){
   // Opsæt canvas og CP5
   size(800, 600);
   surface.setTitle("Crypted Chat by Mostafa Mahdi");
   cp5 = new ControlP5(this);
-
+  
+  // opsæt rsa kryptering
+  rsa = new RSA(2048);
+  
+  if(rsa.rsaExists()){
+    println("RSA loaded rsa.txt");
+    rsa.loadRSA();
+  }else{
+   println("Opretter en ny RSA nøglering, husk at sende den til klienten!");
+   rsa.lavPQ();
+   rsa.setupRSA();
+   rsa.saveRSA();
+   rsa.savePublicKey();
+  }
   
   // Opsæt chat felt
   chatArea = cp5.addTextarea("txt")
@@ -69,6 +82,7 @@ void disconnectEvent(Client disconnectedClient) {
     return; 
   }
   writeMessage("Server", disconnectedUser.username + " har forladt chatten");
+  broadcastMessage("Server", disconnectedUser.username + " har forladt chat");
   chatUsers.remove(disconnectedUser);
   
 }
@@ -80,7 +94,9 @@ void clientEvent(Client clientSender) {
   if(sender == null){
     return; 
   }
-  writeMessage(sender.username, sender.readMessage());
+  String message = sender.readMessage();
+  writeMessage(sender.username, message);
+  broadcastMessage(sender.username, message);
 }
 
 void broadcastMessage(String user, String message){
