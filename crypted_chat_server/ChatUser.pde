@@ -24,7 +24,6 @@ public class ChatUser{
      
      // Modtag authentication packet og split
      newUserInfo = this.readMessage().split("\\|"); // Fordi SPLIT er regex så skal vi escape
-    
      // Sæt dataet i attributerne
      this.username = newUserInfo[0];
      this.publicKey = new BigInteger(newUserInfo[1]);
@@ -38,7 +37,11 @@ public class ChatUser{
    }
      
      String message = networkHandle.readStringUntil('\n').replace("\n", "");
-     return dekryptere(message);
+     println(message);
+     if(username != null){
+      message = dekryptere(message); 
+     }
+     return message;
    }
    
    String dekryptere(String besked){
@@ -55,7 +58,7 @@ public class ChatUser{
        BigInteger[] krypteretBeskedTal = rsa.kryptereMedEnhverKey(publicKey, n, besked);
        String[] krypteretBesked = new String[krypteretBeskedTal.length];
        for(int i = 0; i<krypteretBeskedTal.length;i++){
-          krypteretBesked[i] = krypteretBeskedTal.toString(); 
+          krypteretBesked[i] = krypteretBeskedTal[i].toString(); 
        }
        return String.join(",", krypteretBesked);
    }

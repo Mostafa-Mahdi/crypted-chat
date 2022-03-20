@@ -70,7 +70,8 @@ public void writeMessage(String user, String message){
 void serverEvent(Server chatServer, Client newClient) {
   ChatUser cu = new ChatUser(newClient);
   chatUsers.add(cu);
-  writeMessage("Server", cu.username + " har forbundet sig til serveren");
+  writeMessage("Server", cu.username + " har sluttet sig til serveren");
+  broadcastMessage("Server", cu.username + " har sluttet sig til serveren");
 }
 
 

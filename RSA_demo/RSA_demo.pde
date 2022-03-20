@@ -6,16 +6,14 @@ void setup(){
   println(rsa.publicKey);
   println(rsa.privateKey);
   
-  String secret = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsudasdasdas ha";
-  println("secret: " + secret);
-  BigInteger secretNumber = rsa.stringToNumbers(secret);
-  println("secretNumber: " + secretNumber);
+  String secret = "Hej med dig min søde ven :)";
+  println("Secret: " + secret);
   BigInteger[] crypted = rsa.kryptere(secret);
-  println("crypted: " + crypted);
   String decrypted = rsa.dekryptere(crypted);
   println("decrypted: " + decrypted);
 }
 
 
 void draw(){
+  
 }

@@ -215,7 +215,7 @@ public class RSA{
   
   // Kryptere med eget key
   public BigInteger[] kryptere(String besked){
-    String[] beskedSplittet = besked.split("(?<=\\G.{" + this.maxLengthOfMessage + "})");
+    String[] beskedSplittet = besked.split("(?<=\\G.{" + this.maxLengthOfMessage + "})"); // regex til at splitte
     BigInteger beskedTalSplittet[] = new BigInteger[beskedSplittet.length];
     for(int i = 0; i < beskedSplittet.length; i++){
       BigInteger beskedTal = stringToNumbers(beskedSplittet[i]); // Laver string om til tal vha. ASCII
